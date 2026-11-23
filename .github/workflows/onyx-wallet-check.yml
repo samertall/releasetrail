@@ -21,12 +21,12 @@ jobs:
           test "$network" = "onyx-1"
           body="$(curl -fsSG --retry 3 --max-time 30 "$RPC/abci_query" \
             --data-urlencode "path=\"bank/balances/$ADDRESS\"")"
-          code="$(echo "$body" | jq -r '.result.response.code // 0')"
-          if [ "$code" != "0" ]; then
-            echo "$body" | jq -r '.result.response.log // "RPC returned nonzero ABCI code"'
+          error="$(echo "$body" | jq -r '.result.response.ResponseBase.Error // empty')"
+          if [ -n "$error" ]; then
+            echo "$body" | jq -r '.result.response.ResponseBase.Log // "RPC returned ABCI query error"'
             exit 1
           fi
-          encoded="$(echo "$body" | jq -r '.result.response.value // empty')"
+          encoded="$(echo "$body" | jq -r '.result.response.ResponseBase.Data // empty')"
           if [ -z "$encoded" ]; then
             echo "No balance returned yet; retry after the faucet transaction confirms."
             exit 1

@@ -12,9 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install official Gno binaries
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           curl -fsSL https://raw.githubusercontent.com/gnolang/gno/master/misc/install.sh -o /tmp/install-gno.sh
-          sh /tmp/install-gno.sh
+          sh /tmp/install-gno.sh --version v1.8.0
           echo "$HOME/.gno/bin" >> "$GITHUB_PATH"
       - name: Fetch matching Gno standard library
         run: |

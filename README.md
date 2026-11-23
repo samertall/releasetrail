@@ -4,7 +4,7 @@
 
 ReleaseTrail is an open-source, on-chain product release and independent-attestation registry built for [Gno.land](https://gno.land/). It lets builders publish immutable release milestones, link evidence (repository, deployed demo, changelog, accessibility report), and collect transparent wallet-signed **verify** or **flag** reviews. Project owners can retract a claim, but cannot erase history or reviews.
 
-> Gnome Tavern 2026 submission candidate. **Status: prepared source; NOT deployed until the testnet URL and TX hash are added below.** Do not submit until the checklist is complete.
+> **Gnome Tavern 2026 status (2026-11-23):** ReleaseTrail's `MsgAddPackage` was accepted on Onyx (`onyx-1`) at block **1,351,554**, but the package is currently **inert and awaiting approval**. The realm is **not live or callable yet**. Do **not** present it as a working deployment until the package is enabled, its public page loads, and feature transactions succeed.
 
 ## Why it exists
 
@@ -13,7 +13,7 @@ Software releases, accessibility fixes, and security claims are commonly buried 
 ## Core features
 
 - **Immutable release claims:** `Publish(project, version, summary, evidenceURL)` records block height, author address and an HTTPS evidence URL.
-- **Signed caller checks:** each write uses Gno’s `cur.IsCurrent()` and derives the authenticated caller from `cur.Previous().Address()`; direct wallet calls and composable cross-realm integrations are supported.
+- **Signed caller checks:** write entry points derive authenticated caller identity using `cur.Previous().Address()` in the runtime-provided realm context. The former `cur.IsCurrent()` check was removed for compatibility with the supported runtime.
 - **Independent reviews:** `Review(releaseID, outcome)` accepts `verify` or `flag` from a different wallet, once per wallet per release.
 - **Auditable reviewers:** reviewer address, decision, and block height are persisted and shown publicly in the detail view.
 - **Non-destructive retraction:** `Retract(releaseID)` is restricted to the original author; it preserves the release and past reviews.
@@ -66,7 +66,7 @@ gnodev .
 3. Open `http://localhost:8888`, select ReleaseTrail and use the `Actions` tab.
 4. Publish a release using wallet A, then review it using wallet B. A self-review must be rejected. Verify the public detail page reflects each signed action.
 
-**Test status:** Go-compatible smoke checks were performed offline, but the actual Gno toolchain is unavailable in this workspace. Native Gno tests must pass before deployment; CI includes a Gno test workflow.
+**Test status:** Native Gno lint, tests, and deployment-helper syntax checks passed on GitHub Actions with the Gno v1.8.0 toolchain. [See successful run](https://github.com/samertall/releasetrail/actions/runs/45174592161). This is source-level validation, not proof of the realm functioning on-chain.
 
 ## Deploy to the Onyx testnet
 
@@ -83,9 +83,21 @@ chmod +x scripts/deploy-onyx.sh
 
 The script copies the Gno realm to a temporary directory, rewrites the module path to your own address namespace, and uses `gnokey` to sign and submit an `addpkg` transaction. Review the network, fees and address before signing. It **does not** read or store credentials. Or use [Gno Playground](https://play.gno.land/) with the [Adena wallet](https://adena.app/) and deploy the same realm via the browser.
 
-Expected realm URL after deployment:
+**Submitted package path (currently inert):**
 
-`https://latest.testnets.gno.land/r/<YOUR_G1_ADDRESS>/releasetrail`
+`gno.land/r/g1z4kaltz0g3qj5ey8jefjwfkeqah428vv4syy85/releasetrail`
+
+**Confirmed add-package transaction:**
+
+`5d3b2211a5f01d01ad25e31844708d79eb900a108365271bc85d0e30586dacc5`
+
+[Onyx transaction receipt](https://rpc.onyx.testnets.gno.land:443/tx?hash=0x5d3b2211a5f01d01ad25e31844708d79eb900a108365271bc85d0e30586dacc5) — `msg:0,success:true`, block 1,351,554.
+
+**Package activation status:** [Check current Onyx package metadata](https://rpc.onyx.testnets.gno.land:443/abci_query?path=%22vm%2Fqpkgmeta_json%22&data=0x676e6f2e6c616e642f722f67317a346b616c747a306733716a356579386a65666a77666b6571616834323876763473797938352f72656c65617365747261696c). On 2026-11-23, status was `inert` with reason `waiting for a package approver to enable it`; the realm's live web page still returned 404.
+
+**Target page after enablement:**
+
+`https://onyx.testnets.gno.land/r/g1z4kaltz0g3qj5ey8jefjwfkeqah428vv4syy85/releasetrail`
 
 To inspect a release, append `:<RELEASE_ID>` to the realm URL. Use gnoweb's **Actions** tab for write methods.
 
@@ -125,8 +137,9 @@ https://github.com/samertall/releasetrail
 ## Hackathon requirements
 
 - [x] Public GitHub repository with THIS source (https://github.com/samertall/releasetrail)
-- [ ] `gno fmt`, `gno lint`, `gno test` passing
-- [ ] Live deployed, accessible realm on Onyx testnet
+- [x] Native `gno lint` and `gno test` passing in CI (and shell syntax check)
+- [x] Onyx add-package transaction included and executed successfully (package `inert`)
+- [ ] Package approved/enabled and live realm accessible on Onyx testnet
 - [ ] Publish, independent Review and Retract transactions confirmed
 - [ ] Demo video with the chain interaction and live URLs
 - [ ] DoraHacks BUIDL submitted once, with links and honest technical details

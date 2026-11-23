@@ -16,7 +16,7 @@ jobs:
           curl -fsSL https://raw.githubusercontent.com/gnolang/gno/master/misc/install.sh -o /tmp/install-gno.sh
           sh /tmp/install-gno.sh
           echo "$HOME/.gno/bin" >> "$GITHUB_PATH"
-      - name: Gno version
+      - name: Fetch matching Gno standard library\n        run: |\n          git clone --depth=1 --branch v1.8.0 https://github.com/gnolang/gno.git /tmp/gno-toolchain\n          echo "GNOROOT=/tmp/gno-toolchain" >> "$GITHUB_ENV"\n      - name: Gno version
         run: gno version
       - name: Gno lint
         working-directory: realm

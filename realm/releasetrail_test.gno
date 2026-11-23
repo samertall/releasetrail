@@ -51,8 +51,11 @@ func TestInitialRender(t *testing.T) {
 	}
 }
 
+// Same-realm unit test: direct `cur` calls exercise record mutations without
+// depending on the newer cross(cur) syntax. Real cross-realm authorization
+// must be checked with transactions on the target network.
 func TestPublishAndRetract(cur realm, t *testing.T) {
-	id := Publish(cross(cur), "ReleaseTrail", "v1.0.0", "First public milestone registered with evidence", "https://github.com/samertall")
+	id := Publish(cur, "ReleaseTrail", "v1.0.0", "First public milestone registered with evidence", "https://github.com/samertall")
 	if id < 1 {
 		t.Fatalf("expected positive release ID, got %d", id)
 	}
@@ -63,7 +66,7 @@ func TestPublishAndRetract(cur realm, t *testing.T) {
 	if Count() < 1 {
 		t.Fatal("count should grow after publishing")
 	}
-	result := Retract(cross(cur), id)
+	result := Retract(cur, id)
 	if result != "release retracted, history retained" {
 		t.Fatal("retraction should preserve historical record")
 	}

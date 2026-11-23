@@ -1,0 +1,40 @@
+name: Onyx wallet readiness
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  verify-wallet:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify Onyx RPC and public wallet balance (read-only)
+        env:
+          RPC: https://rpc.onyx.testnets.gno.land:443
+          ADDRESS: g1z4kaltz0g3qj5ey8jefjwfkeqah428vv4syy85
+        run: |
+          set -euo pipefail
+          status="$(curl -fsS --retry 3 --max-time 30 "$RPC/status")"
+          network="$(echo "$status" | jq -r '.result.node_info.network // empty')"
+          echo "Network: $network"
+          test "$network" = "onyx-1"
+          body="$(curl -fsSG --retry 3 --max-time 30 "$RPC/abci_query" \
+            --data-urlencode "path=\"bank/balances/$ADDRESS\"")"
+          code="$(echo "$body" | jq -r '.result.response.code // 0')"
+          if [ "$code" != "0" ]; then
+            echo "$body" | jq -r '.result.response.log // "RPC returned nonzero ABCI code"'
+            exit 1
+          fi
+          encoded="$(echo "$body" | jq -r '.result.response.value // empty')"
+          if [ -z "$encoded" ]; then
+            echo "No balance returned yet; retry after the faucet transaction confirms."
+            exit 1
+          fi
+          balance="$(printf '%s' "$encoded" | base64 -d)"
+          echo "Public wallet $ADDRESS balance: $balance"
+          if ! printf '%s' "$balance" | grep -Eq '[1-9][0-9]*ugnot'; then
+            echo "Unable to verify a positive ugnot balance."
+            exit 1
+          fi
+          echo "Onyx balance confirmed; signing/deployment still requires the wallet owner."

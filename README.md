@@ -13,7 +13,7 @@ Software releases, accessibility fixes, and security claims are commonly buried 
 ## Core features
 
 - **Immutable release claims:** `Publish(project, version, summary, evidenceURL)` records block height, author address and an HTTPS evidence URL.
-- **Signed caller checks:** each write uses Gno’s `cur.IsCurrent()` plus a direct-wallet-call guard and derives the author from `cur.Previous().Address()`.
+- **Signed caller checks:** each write uses Gno’s `cur.IsCurrent()` and derives the authenticated caller from `cur.Previous().Address()`; direct wallet calls and composable cross-realm integrations are supported.
 - **Independent reviews:** `Review(releaseID, outcome)` accepts `verify` or `flag` from a different wallet, once per wallet per release.
 - **Auditable reviewers:** reviewer address, decision, and block height are persisted and shown publicly in the detail view.
 - **Non-destructive retraction:** `Retract(releaseID)` is restricted to the original author; it preserves the release and past reviews.
@@ -24,7 +24,7 @@ Software releases, accessibility fixes, and security claims are commonly buried 
 ## Architecture
 
 ```text
-Publisher's Gno wallet          Independent reviewer's wallet
+Publisher / calling realm          Independent reviewer / calling realm
         |                                     |
         | Publish(project, ...)               | Review(id, verify|flag)
         v                                     v

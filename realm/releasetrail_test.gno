@@ -51,11 +51,10 @@ func TestInitialRender(t *testing.T) {
 	}
 }
 
-// Same-realm unit test: direct `cur` calls exercise record mutations without
-// depending on the newer cross(cur) syntax. Real cross-realm authorization
-// must be checked with transactions on the target network.
+// Native Gno tests explicitly cross the realm boundary to exercise
+// persistent mutation and runtime-authenticated caller identity.
 func TestPublishAndRetract(cur realm, t *testing.T) {
-	id := Publish(cur, "ReleaseTrail", "v1.0.0", "First public milestone registered with evidence", "https://github.com/samertall")
+	id := Publish(cross(cur), "ReleaseTrail", "v1.0.0", "First public milestone registered with evidence", "https://github.com/samertall")
 	if id < 1 {
 		t.Fatalf("expected positive release ID, got %d", id)
 	}
@@ -66,7 +65,7 @@ func TestPublishAndRetract(cur realm, t *testing.T) {
 	if Count() < 1 {
 		t.Fatal("count should grow after publishing")
 	}
-	result := Retract(cur, id)
+	result := Retract(cross(cur), id)
 	if result != "release retracted, history retained" {
 		t.Fatal("retraction should preserve historical record")
 	}

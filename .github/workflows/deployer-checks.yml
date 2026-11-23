@@ -29,6 +29,8 @@ jobs:
           assert.ok(m[1].includes("const GNOMOD="+JSON.stringify(module)+";"), "Embedded gnomod must match realm config");
           assert.ok(m[1].includes('send:"",max_deposit:MAX_DEPOSIT'), "Current vm MsgAddPackage fields required");
           assert.ok(m[1].includes('name:"gnomod.toml",body:GNOMOD'), "Must deploy gnomod.toml");
+          assert.ok(m[1].includes('files:[{name:"gnomod.toml",body:GNOMOD},{name:"releasetrail.gno",body:SOURCE}]'), "AddPackage files must be sorted: gnomod.toml before releasetrail.gno");
+          assert.ok(!m[1].includes('files:[{name:"releasetrail.gno",body:SOURCE},{name:"gnomod.toml",body:GNOMOD}]'), "Unsorted files rejected on-chain");
           assert.ok(!m[1].includes('deposit:"1ugnot"'), "Old deposit field forbidden");
           assert.ok(m[1].includes("const CHAIN=\"onyx-1\""), "Must target funded Onyx");
           console.log("Deployer syntax and source payload verified.");

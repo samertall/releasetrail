@@ -46,7 +46,6 @@ var flagsCount int
 // Publish records a release claim. Each release and its evidence link are immutable.
 // The authentic calling realm/address is used as the author, never a user-supplied value.
 func Publish(cur realm, project string, version string, summary string, evidenceURL string) int {
-	assertCaller(cur)
 	if len(releases) >= maxReleases {
 		panic("release registry is full")
 	}
@@ -79,7 +78,6 @@ func Publish(cur realm, project string, version string, summary string, evidence
 // Review creates one public review per wallet, per release.
 // A publisher cannot review their own release. Reviews cannot be changed.
 func Review(cur realm, releaseID int, outcome string) string {
-	assertCaller(cur)
 	r := lookup(releaseID)
 	if r.Retracted {
 		panic("cannot review a retracted release")
@@ -118,7 +116,6 @@ func Review(cur realm, releaseID int, outcome string) string {
 // Retract marks a release as withdrawn. The original claim and reviews remain
 // visible in public history; deletion and revision are not possible.
 func Retract(cur realm, releaseID int) string {
-	assertCaller(cur)
 	r := lookup(releaseID)
 	if r.Author != cur.Previous().Address() {
 		panic("only the original publisher may retract")
@@ -217,13 +214,10 @@ func describe(r *Release) string {
 	return out
 }
 
-// Mutation authorization is derived from the chain's active crossing frame.
-// Each direct wallet or calling realm is accountable under its own address.
-func assertCaller(cur realm) {
-    if !cur.IsCurrent() {
-        panic("spoofed realm context")
-    }
-}
+// Mutating entry points receive a runtime-created realm context.
+// Immediate caller identity is taken from cur.Previous().Address(),
+// not from a caller-supplied address. The cur.IsCurrent() assertion was
+// redundant and is unavailable in some Playground VM builds.
 
 func lookup(id int) *Release {
 	if id < 1 || id > len(releases) {

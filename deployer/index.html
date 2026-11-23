@@ -87,12 +87,12 @@ function setStatus(message,type=""){const el=$("status");el.textContent=message;
 function authError(res){return !res || res.status==="failure" || (typeof res.code==="number" && res.code!==0)}
 function reset(){connected=false;$("check").disabled=true;$("consent").checked=false;$("consent").disabled=true;$("deploy").disabled=true}
 function wallet(){const a=window.adena;if(!a)throw Error("Adena extension not found. Open this page in Chrome with Adena installed and unlocked.");return a}
-function txMessage(){return{type:"/vm.m_addpkg",value:{creator:ADDR,send:"",max_deposit:MAX_DEPOSIT,package:{name:"releasetrail",path:PATH,files:[{name:"releasetrail.gno",body:SOURCE},{name:"gnomod.toml",body:GNOMOD}]}}}}
+function txMessage(){return{type:"/vm.m_addpkg",value:{creator:ADDR,send:"",max_deposit:MAX_DEPOSIT,package:{name:"releasetrail",path:PATH,files:[{name:"gnomod.toml",body:GNOMOD},{name:"releasetrail.gno",body:SOURCE}]}}}}
 async function checkAccount(){try{const res=await wallet().GetAccount();if(authError(res))throw Error("Adena account check failed: "+(res?.message||"not connected"));const d=res.data||{};const address=d.address;const chain=d.chainId||d.chain_id;
  if(address!==ADDR){reset();throw Error("Wrong wallet: "+address+". Select the funded Account 1 ("+ADDR+") in Adena.");}
  if(chain!==CHAIN){reset();throw Error("Wrong Adena network: "+chain+". Select Onyx ("+CHAIN+") in Adena.");}
  connected=true;$("check").disabled=false;$("consent").disabled=false;setStatus("Verified: "+address+"\nNetwork: "+chain+"\nReady. Review the package and check the confirmation box.","ok");
- $("preview").textContent=JSON.stringify({messages:[{type:"/vm.m_addpkg",value:{creator:ADDR,send:"",max_deposit:MAX_DEPOSIT,package:{name:"releasetrail",path:PATH,files:[{name:"releasetrail.gno",body:"[source: "+SOURCE.length+" characters, SHA-256 shown above]"},{name:"gnomod.toml",body:GNOMOD}]}}}],gasFee:GAS_FEE,gasWanted:GAS_WANTED,memo:"ReleaseTrail Onyx deployment"},null,2);
+ $("preview").textContent=JSON.stringify({messages:[{type:"/vm.m_addpkg",value:{creator:ADDR,send:"",max_deposit:MAX_DEPOSIT,package:{name:"releasetrail",path:PATH,files:[{name:"gnomod.toml",body:GNOMOD},{name:"releasetrail.gno",body:"[source: "+SOURCE.length+" characters, SHA-256 shown above]"}]}}}],gasFee:GAS_FEE,gasWanted:GAS_WANTED,memo:"ReleaseTrail Onyx deployment"},null,2);
  }catch(e){setStatus(String(e.message||e),"error")}}
 $("connect").addEventListener("click",async()=>{try{setStatus("Requesting wallet connection. Approve only if you recognize this site.");const a=wallet();const x=await a.AddEstablish("ReleaseTrail Onyx Deployer");if(authError(x)&&x.type!=="ALREADY_CONNECTED")throw Error(x.message||"Connection rejected");await checkAccount()}catch(e){setStatus(String(e.message||e),"error")}});
 $("check").addEventListener("click",checkAccount);

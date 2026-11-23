@@ -1,6 +1,6 @@
 # DoraHacks submission — ReleaseTrail
 
-> Draft only. **Never claim deployed, tested or submitted until the actual links and transaction receipts are verified.**
+> Draft only. **Do not submit until the contract is enabled and working publicly on Onyx, a genuine demo video exists, and all required links are verified.** Native source tests passed on CI; add-package transaction succeeded, but the package is inert and no working demo has been verified.
 
 ## Project name
 ReleaseTrail
@@ -23,19 +23,21 @@ Gno, Gno.land realm, gnoweb Markdown renderer, `chain/runtime` and `strconv`/`st
 https://github.com/samertall/releasetrail
 
 ## Live testnet URL
-[ADD VERIFIED REALM URL AFTER DEPLOYMENT]
+**Not live yet:** the Gno.land package submission succeeded but the realm is still `inert` and awaiting approval as of 2026-11-23.
+
+Target after activation: https://onyx.testnets.gno.land/r/g1z4kaltz0g3qj5ey8jefjwfkeqah428vv4syy85/releasetrail
 
 ## On-chain contract path
-`gno.land/r/[G1_ADDRESS]/releasetrail` — address not yet assigned
+`gno.land/r/g1z4kaltz0g3qj5ey8jefjwfkeqah428vv4syy85/releasetrail` — submitted on Onyx, awaiting enablement
 
 ## Transaction proof
-- Add package: [ACTUAL_TX_HASH]
+- Add package: `5d3b2211a5f01d01ad25e31844708d79eb900a108365271bc85d0e30586dacc5` — executed with `msg:0,success:true` at Onyx block 1,351,554. [Receipt](https://rpc.onyx.testnets.gno.land:443/tx?hash=0x5d3b2211a5f01d01ad25e31844708d79eb900a108365271bc85d0e30586dacc5). This is **package submission, not activation**.
 - Publish release: [ACTUAL_TX_HASH]
 - Review by separate wallet: [ACTUAL_TX_HASH]
 - Retract a demo release (optional): [ACTUAL_TX_HASH]
 
 ## Demo video
-[ADD VIDEO URL AFTER RECORDING]
+**Pending.** Record a genuine working demo after the Gno.land package is enabled. Do not submit a simulated, AI-generated or static-only video as an on-chain functional demonstration.
 
 ## Builder
 Samer Tallauze — Product Design & Engineering; Amman, Jordan. [https://samertall.com](https://samertall.com)

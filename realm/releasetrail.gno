@@ -44,9 +44,9 @@ var reviewsCount int
 var flagsCount int
 
 // Publish records a release claim. Each release and its evidence link are immutable.
-// The caller's on-chain address is used as the author, never a user-supplied value.
+// The authentic calling realm/address is used as the author, never a user-supplied value.
 func Publish(cur realm, project string, version string, summary string, evidenceURL string) int {
-	assertDirectCaller(cur)
+	assertCaller(cur)
 	if len(releases) >= maxReleases {
 		panic("release registry is full")
 	}
@@ -79,7 +79,7 @@ func Publish(cur realm, project string, version string, summary string, evidence
 // Review creates one public review per wallet, per release.
 // A publisher cannot review their own release. Reviews cannot be changed.
 func Review(cur realm, releaseID int, outcome string) string {
-	assertDirectCaller(cur)
+	assertCaller(cur)
 	r := lookup(releaseID)
 	if r.Retracted {
 		panic("cannot review a retracted release")
@@ -118,7 +118,7 @@ func Review(cur realm, releaseID int, outcome string) string {
 // Retract marks a release as withdrawn. The original claim and reviews remain
 // visible in public history; deletion and revision are not possible.
 func Retract(cur realm, releaseID int) string {
-	assertDirectCaller(cur)
+	assertCaller(cur)
 	r := lookup(releaseID)
 	if r.Author != cur.Previous().Address() {
 		panic("only the original publisher may retract")
@@ -218,13 +218,10 @@ func describe(r *Release) string {
 }
 
 // Mutation authorization is derived from the chain's active crossing frame.
-// Direct wallet calls are required; contract intermediaries cannot spoof authors.
-func assertDirectCaller(cur realm) {
+// Each direct wallet or calling realm is accountable under its own address.
+func assertCaller(cur realm) {
     if !cur.IsCurrent() {
         panic("spoofed realm context")
-    }
-    if !cur.Previous().IsUserCall() {
-        panic("a directly signed wallet call is required")
     }
 }
 

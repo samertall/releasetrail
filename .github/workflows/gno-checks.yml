@@ -1,0 +1,28 @@
+name: Native Gno checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  gno-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install official Gno binaries
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/gnolang/gno/master/misc/install.sh -o /tmp/install-gno.sh
+          sh /tmp/install-gno.sh
+          echo "$HOME/.gno/bin" >> "$GITHUB_PATH"
+      - name: Gno version
+        run: gno version
+      - name: Gno lint
+        working-directory: realm
+        run: gno lint ./...
+      - name: Gno tests
+        working-directory: realm
+        run: gno test ./...
+      - name: Deployment helper syntax
+        run: bash -n scripts/deploy-onyx.sh

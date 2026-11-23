@@ -6,10 +6,10 @@
 ReleaseTrail
 
 ## Short description
-ReleaseTrail is a Gno.land-native product release registry that records wallet-authored milestones, external evidence links, independent verification or flag decisions, and non-destructive retractions. Anyone can inspect the public review trail directly on-chain using gnoweb; no backend or account system is required.
+ReleaseTrail is a Gno.land-native product release registry that records authenticated caller-authored milestones, external evidence links, independent verification or flag decisions, and non-destructive retractions. Anyone can inspect the public review trail directly on-chain using gnoweb; no backend or account system is required.
 
 ## Detailed description
-Release notes are often editable, fragmented, and difficult to verify. ReleaseTrail turns each milestone into a public on-chain claim, with the submitting wallet address, block height, version, summary and evidence link recorded immutably. Other wallets can verify or flag a milestone, while the original publisher may retract it without erasing historical provenance. A native `Render(path)` function provides a browsable Gno.land interface, including signed reviewer addresses and block heights.
+Release notes are often editable, fragmented, and difficult to verify. ReleaseTrail turns each milestone into a public on-chain claim, with the authenticated calling address, block height, version, summary and evidence link recorded immutably. Other wallets can verify or flag a milestone, while the original publisher may retract it without erasing historical provenance. A native `Render(path)` function provides a browsable Gno.land interface, including signed reviewer addresses and block heights.
 
 The project's strength is deliberate simplicity and transparency: the registry only establishes provenance and wallet-signed opinions, not the accuracy of linked claims or the identity of reviewers. Gno's native realm architecture keeps the logic, state and public UI on the same chain.
 
